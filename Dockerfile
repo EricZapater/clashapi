@@ -1,9 +1,7 @@
 FROM golang:alpine AS build
 
 RUN apk add --update git
-RUN apk add --no-cache tzdata
-RUN ln -fs /usr/share/zoneinfo/Europe/Madrid /etc/localtime && \
-    dpkg-reconfigure -f noninteractive tzdata
+RUN apk add --no-cache tzdata && setup-timezone -z Europe/Madrid
 WORKDIR /go/src/github.com/EricZapater/clashapi
 COPY . .
 RUN CGO_ENABLED=0 go build -o /go/bin/clashapi main.go
