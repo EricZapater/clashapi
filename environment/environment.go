@@ -10,12 +10,16 @@ import (
 
 // Site is the data structure that represents an Site.
 type Environment struct {
-	Bearer   string
-	Endpoint string
-	From     string
-	Password string
-	T_Token  string
-	T_ChatID int
+	Bearer     string
+	Endpoint   string
+	From       string
+	Password   string
+	T_Token    string
+	T_ChatID   int
+	HoraAvis   int
+	MinutAvis  int
+	HoraFinal  int
+	MinutFinal int
 }
 
 // LoadEnvironment creates a new Environment.
@@ -32,14 +36,26 @@ func LoadEnvironment() Environment {
 	t_Token := os.Getenv("TELEGRAM_TOKEN")
 	t_ChatID, err := strconv.Atoi(os.Getenv("TELEGRAM_CHATID"))
 	CheckConversionError("TELEGRAM_CHATID", err)
+	horaFinal, err := strconv.Atoi(os.Getenv("HORAFINAL"))
+	CheckConversionError("HORAFINAL", err)
+	minutFinal, err := strconv.Atoi(os.Getenv("MINUTFINAL"))
+	CheckConversionError("MINUTFINAL", err)
+	horaAvis, err := strconv.Atoi(os.Getenv("HORAAVIS"))
+	CheckConversionError("HORAAVIS", err)
+	minutAvis, err := strconv.Atoi(os.Getenv("MINUTAVIS"))
+	CheckConversionError("MINUTAVIS", err)
 
 	return Environment{
-		Bearer:   bearer,
-		Endpoint: endpoint,
-		From:     from,
-		Password: password,
-		T_Token:  t_Token,
-		T_ChatID: t_ChatID,
+		Bearer:     bearer,
+		Endpoint:   endpoint,
+		From:       from,
+		Password:   password,
+		T_Token:    t_Token,
+		T_ChatID:   t_ChatID,
+		HoraAvis:   horaAvis,
+		MinutAvis:  minutAvis,
+		HoraFinal:  horaFinal,
+		MinutFinal: minutFinal,
 	}
 }
 
