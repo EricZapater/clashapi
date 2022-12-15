@@ -77,16 +77,13 @@ func GetRunaways(env environment.Environment) []model.Runaway {
 	return runaways
 }
 
-func SendRunaways(env environment.Environment, runaways []model.Runaway) error {
+func send(env environment.Environment, stringMessage string) error {
 	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", env.T_Token)
-	var s_runaways string
-	for _, v := range runaways {
-		s_runaways = fmt.Sprintf("%s\nNom: %s\nBaralles totals: %v\nBaralles avui:%v\n", s_runaways, v.Name, v.DecksUsed, v.DecksUsedToday)
-	}
+
 	var message model.Message
 
 	message.Chat_id = env.T_ChatID
-	message.Text = s_runaways
+	message.Text = stringMessage
 
 	payload, err := json.Marshal(message)
 	if err != nil {
@@ -104,7 +101,24 @@ func SendRunaways(env environment.Environment, runaways []model.Runaway) error {
 	if response.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to send successful request. Status was %q", response.Status)
 	}
-	fmt.Println(runaways)
-	fmt.Println(s_runaways)
+	return nil
+}
+
+func SendRunaways(env environment.Environment, runaways []model.Runaway) error {
+	var s_runaways string
+	var l_runaways string
+	for _, v := range runaways {
+		s_runaways = fmt.Sprintf("%s\nNom: %s\nBaralles totals: %v\nBaralles avui:%v\n", s_runaways, v.Name, v.DecksUsed, v.DecksUsedToday)
+		l_runaways = fmt.Sprintf("%s,%s", l_runaways, v.Name)
+	}
+	err := send(env, s_runaways)
+	if err != nil {
+		return err
+	}
+	err = send(env, l_runaways)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
