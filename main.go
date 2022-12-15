@@ -12,9 +12,9 @@ import (
 func main() {
 	for {
 		env := environment.LoadEnvironment()
-		//zona, _ := time.Now().Zone()
-		loc, _ := time.LoadLocation("Europe/Madrid")
-		//fmt.Println(zona, offset)
+		zona, _ := time.Now().Zone()
+		loc, _ := time.LoadLocation(zona)
+		fmt.Println(zona)
 
 		iniTime := time.Now().In(loc) //UTC().Add(time.Duration(offset) * time.Second)
 		fmt.Println(iniTime)
