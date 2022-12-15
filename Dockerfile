@@ -2,6 +2,7 @@ FROM golang:alpine AS build
 
 RUN apk add --update git
 RUN apk add --no-cache tzdata 
+RUN apk add bash
 WORKDIR /go/src/github.com/EricZapater/clashapi
 COPY . .
 RUN CGO_ENABLED=0 go build -o /go/bin/clashapi main.go
