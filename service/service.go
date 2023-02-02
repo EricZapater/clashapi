@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/smtp"
+	"strings"
 
 	"github.com/EricZapater/clashapi/environment"
 	"github.com/EricZapater/clashapi/model"
@@ -40,6 +41,47 @@ func (a *loginAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 	return nil, nil
 }
 
+func GetPlayers(env environment.Environment) []model.Runaway {
+	url := env.Endpoint
+	// Create a Bearer string by appending string access token
+	var bearer = "Bearer " + env.Bearer
+	// Create a new request using http
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Println("Error creating new request.\n", err)
+	}
+
+	// add authorization header to the req
+	req.Header.Add("Authorization", bearer)
+
+	// Send req using http Client
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERROR] -", err)
+	}
+	defer resp.Body.Close()
+	var clan model.Resp
+	json.NewDecoder(resp.Body).Decode(&clan)
+	var runaways []model.Runaway
+	var runaway model.Runaway
+	for _, v := range clan.Clan.Participants {
+		isFromClan, err := IsFromClan(v.Tag, env)
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
+		if isFromClan {
+			runaway.Tag = v.Tag
+			runaway.Name = v.Name
+			runaway.DecksUsed = v.DecksUsed
+			runaway.DecksUsedToday = v.DecksUsedToday
+			runaways = append(runaways, runaway)
+		}
+	}
+	return runaways
+}
+
 func GetRunaways(env environment.Environment) []model.Runaway {
 	url := env.Endpoint
 	// Create a Bearer string by appending string access token
@@ -66,7 +108,12 @@ func GetRunaways(env environment.Environment) []model.Runaway {
 	var runaways []model.Runaway
 	var runaway model.Runaway
 	for _, v := range clan.Clan.Participants {
-		if v.DecksUsedToday < 4 {
+		isFromClan, err := IsFromClan(v.Tag, env)
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
+		if v.DecksUsedToday < 4 && isFromClan {
 			runaway.Tag = v.Tag
 			runaway.Name = v.Name
 			runaway.DecksUsed = v.DecksUsed
@@ -121,4 +168,31 @@ func SendRunaways(env environment.Environment, runaways []model.Runaway) error {
 	}
 
 	return nil
+}
+
+func IsFromClan(usertag string, env environment.Environment) (bool, error) {
+	url := fmt.Sprintf("https://api.clashroyale.com/v1/players/%s", strings.Replace(usertag, "#", "%23", 1))
+	var bearer = "Bearer " + env.Bearer
+	// Create a new request using http
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Println("Error creating new request.\n", err)
+	}
+
+	// add authorization header to the req
+	req.Header.Add("Authorization", bearer)
+	req.Header.Add("Cache-Control", "no-cache")
+	// Send req using http Client
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERROR] -", err)
+	}
+	defer resp.Body.Close()
+	var clan model.Resp
+	json.NewDecoder(resp.Body).Decode(&clan)
+	if clan.Clan.Name == "CATALUNYA" {
+		return true, nil
+	}
+	return false, nil
 }

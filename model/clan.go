@@ -1,7 +1,11 @@
 package model
 
+import (
+	"time"
+)
+
 type Resp struct {
-	State string `json:"state"`
+	State string `json:"state,ommitempty"`
 	Clan  Clan   `json:"clan"`
 }
 
@@ -36,4 +40,24 @@ type Runaway struct {
 type Message struct {
 	Chat_id int    `json:"chat_id"`
 	Text    string `json:"text"`
+}
+
+type DbLog struct {
+	Year        int
+	Week        int
+	Day         time.Time
+	Player      string
+	BattlesDone int
+	Comments    string
+}
+
+func NewDbLog(year, week int, day time.Time, player string, battlesdone int, comments string) DbLog {
+	return DbLog{
+		Year:        year,
+		Week:        week,
+		Day:         day,
+		Player:      player,
+		BattlesDone: battlesdone,
+		Comments:    comments,
+	}
 }

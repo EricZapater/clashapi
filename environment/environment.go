@@ -20,6 +20,11 @@ type Environment struct {
 	MinutAvis  int
 	HoraFinal  int
 	MinutFinal int
+	DbHost     string
+	DbUser     string
+	DbPass     string
+	DbPort     int
+	DbName     string
 }
 
 // LoadEnvironment creates a new Environment.
@@ -44,6 +49,12 @@ func LoadEnvironment() Environment {
 	CheckConversionError("HORAAVIS", err)
 	minutAvis, err := strconv.Atoi(os.Getenv("MINUTAVIS"))
 	CheckConversionError("MINUTAVIS", err)
+	dbHost := os.Getenv("DBHOST")
+	dbUser := os.Getenv("DBUSER")
+	dbPass := os.Getenv("DBPASS")
+	dbPort, err := strconv.Atoi(os.Getenv("DBPORT"))
+	CheckConversionError("DBPORT", err)
+	dbName := os.Getenv("DBNAME")
 
 	return Environment{
 		Bearer:     bearer,
@@ -56,6 +67,11 @@ func LoadEnvironment() Environment {
 		MinutAvis:  minutAvis,
 		HoraFinal:  horaFinal,
 		MinutFinal: minutFinal,
+		DbHost:     dbHost,
+		DbUser:     dbUser,
+		DbPass:     dbPass,
+		DbPort:     dbPort,
+		DbName:     dbName,
 	}
 }
 
