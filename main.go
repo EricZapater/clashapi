@@ -63,7 +63,7 @@ func main() {
 		loc, _ := time.LoadLocation(zona)
 
 		iniTime := time.Now().In(loc) //UTC().Add(time.Duration(offset) * time.Second)
-		if int(iniTime.Weekday()) == 5 || int(iniTime.Weekday()) == 6 || int(iniTime.Weekday()) == 7 || int(iniTime.Weekday()) == 1 {
+		if int(iniTime.Weekday()) == 5 || int(iniTime.Weekday()) == 6 || int(iniTime.Weekday()) == 7 || int(iniTime.Weekday()) == 0 || int(iniTime.Weekday()) == 1 {
 			fmt.Println(iniTime)
 			if (iniTime.Hour() == env.HoraFinal && iniTime.Minute() == env.MinutFinal) || (iniTime.Hour() == env.HoraAvis && iniTime.Minute() == env.MinutAvis) {
 				fmt.Printf("Send: %v\n", time.Now().In(loc))
@@ -73,7 +73,7 @@ func main() {
 				if err != nil {
 					log.Printf("error sending runaways: %v\n", err)
 				}
-				players := service.GetPlayers(env)
+				players := runaways
 				for _, player := range players {
 					var iweek int
 					_, iweek = iniTime.ISOWeek()
