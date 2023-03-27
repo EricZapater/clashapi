@@ -60,7 +60,9 @@ func main() {
 	for {
 		env := environment.LoadEnvironment()
 		zona, _ := time.Now().Zone()
-		loc, _ := time.LoadLocation(zona)
+		fmt.Println(zona)
+		loc, err := time.LoadLocation("CET")
+		fmt.Println(err)
 
 		iniTime := time.Now().In(loc) //UTC().Add(time.Duration(offset) * time.Second)
 		if int(iniTime.Weekday()) == 5 || int(iniTime.Weekday()) == 6 || int(iniTime.Weekday()) == 7 || int(iniTime.Weekday()) == 0 || int(iniTime.Weekday()) == 1 {
